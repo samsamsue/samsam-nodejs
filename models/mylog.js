@@ -6,6 +6,10 @@ const itemSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    mediaList:{
+        type:Array,
+        default:[],
+    }
 });
 const Item = mongoose.model('mylog', itemSchema);
 

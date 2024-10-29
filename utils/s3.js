@@ -40,7 +40,7 @@ class S3 {
         const mine = file.mimetype;
         const crypto = require('crypto');
         const ext = mimes[mine] || 'unknown';
-        const randomName = crypto.randomBytes(16).toString('hex');  
+        const randomName = crypto.createHash('md5').update(file.buffer).digest('hex');
         return `${randomName}.${ext}`;
     }
 
@@ -86,16 +86,9 @@ class S3 {
     
         try {
             const url = await getSignedUrl(this.client(), command, { expiresIn: 3600 }); // 过期时间为3600秒（1小时）
-            return {
-                success: true,
-                message: "Get URL successful",
-                data: { url }
-            }
+            return url;
         } catch (err) {
-            return {
-                success: false,
-                message: "Get URL failed:" + err.message,
-            }
+            return null;
         }
     }
 

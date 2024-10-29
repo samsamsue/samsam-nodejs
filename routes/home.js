@@ -5,19 +5,76 @@ router.get('/', async (req, res) => {
     res.send('Hello World!');
 });
 
+router.post('/mylog-delete', async (req, res) => {
+    const {id} = req.body;
+    const logModel = require('../models/mylog');
+    try{
+        await logModel.findByIdAndDelete(id);
+        res.json({
+            success:true,
+            message:'删除成功'
+        })
+    }catch(e){
+        res.json({
+            success:false,
+            message:'删除出错了：'+e.message
+        })
+    }
+})
+
+router.post('/mylog-submit', async(req,res)=>{
+    const {content, mediaList} = req.body;
+
+    if(content === '' && (mediaList||[]).length < 1){
+        return res.json({
+            success:false,
+            message:'你咋啥也没写'
+        })
+    }
+    const logModel = require('../models/mylog');
+    const log = new logModel({
+        content,
+        date: new Date(),
+        mediaList
+    });
+
+    try{
+        await log.save();
+        res.json({
+            success:true,
+            message:'发表成功'
+        })
+    }catch(e){
+        res.json({
+            success:false,
+            message:'发表出错了：'+e.message
+        })
+    }
+
+
+
+
+})
+
 // 定义路由
 router.get('/mylog-list', async (req, res) => {
 
     const logModel = require('../models/mylog');
+    const list =  await logModel.find({}).sort({date:-1});
 
-    // const log = new logModel({
-    //     content: 'content:'+ (+ new Date()),
-    //     date: new Date(),
-    // });
+    const S3 = require('../utils/s3')
 
-    // log.save();
 
-    const list =  await logModel.find({});
+    for(let row of list){
+        if(row.mediaList.length > 0){
+            for(let index in row.mediaList){
+                const key = row.mediaList[index];
+                row.mediaList[index] = await S3.getUrl(key)
+            }
+        }
+    }
+
+    console.log(list)
 
     res.json({
         success: true,
@@ -25,10 +82,6 @@ router.get('/mylog-list', async (req, res) => {
     });
 });
 
-
-const ACCOUNT_ID = '76f8a0b6cca454c642c1edb9116a81ec';
-const ACCESS_KEY_ID = 'fc9205f676aa0386e29e496b4ec64169';
-const SECRET_ACCESS_KEY = '688e662f9360a9a49b89db28491d7819962859adf1cd4be79e9fee08bf692900';
 
 const multer = require('multer');
 const upload = multer({ storage: multer.memoryStorage() });
