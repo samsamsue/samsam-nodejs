@@ -14,10 +14,7 @@ app.listen(port, () => {
   console.log(`App listening at http://127.0.0.1:${port}`);
 });
 
-
-const uri = 'mongodb+srv://yiroonli:44MCcTCDpCTuswwQ@samsam-db.r9u42.mongodb.net/samsam?retryWrites=true&w=majority&appName=samsam-db';
-
-mongoose.connect(uri)
+mongoose.connect(process.env.MONGODB_URI)
   .then(() => {
     console.log('MongoDB connected successfully!');
   })
