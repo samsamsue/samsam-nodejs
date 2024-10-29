@@ -14,7 +14,6 @@ app.listen(port, () => {
   console.log(`App listening at http://127.0.0.1:${port}`);
 });
 
-console.log(process.env.MONGODB_URI)
 
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => {

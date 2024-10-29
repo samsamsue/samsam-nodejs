@@ -31,7 +31,7 @@ const ACCESS_KEY_ID = 'fc9205f676aa0386e29e496b4ec64169';
 const SECRET_ACCESS_KEY = '688e662f9360a9a49b89db28491d7819962859adf1cd4be79e9fee08bf692900';
 
 const multer = require('multer');
-const upload = multer({ dest: 'uploads/' }); // 临时存储文件
+const upload = multer({ storage: multer.memoryStorage() });
 
 
 

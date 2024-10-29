@@ -23,9 +23,23 @@ class S3 {
         });
     }
 
-    static generateRandomFileName(originalName){
+    static generateRandomFileName(file){
+
+        const mimes = {
+            'image/jpeg': 'jpg',
+            'image/png': 'png',
+            'image/gif': 'gif', 
+            //视频
+            'video/mp4':'mp4',
+            'video/webm': 'webm',
+            'video/ogg': 'ogg',
+            'video/flv': 'flv',
+            'video/x-ms-wmv': 'wmv',
+        }
+
+        const mine = file.mimetype;
         const crypto = require('crypto');
-        const ext = originalName.split('.').pop();
+        const ext = mimes[mine] || 'unknown';
         const randomName = crypto.randomBytes(16).toString('hex');  
         return `${randomName}.${ext}`;
     }
@@ -37,15 +51,12 @@ class S3 {
                 message: "No file uploaded",
             }
         }
-
-        const fs = require('fs');
-        const fileName = this.generateRandomFileName(file.originalname);
-        const fileContent = await fs.readFileSync(file.path);   
+        const fileName = this.generateRandomFileName(file);
         const { PutObjectCommand } = require("@aws-sdk/client-s3");
         const command = new PutObjectCommand({
             Bucket: this.bucketName,
             Key: fileName,
-            Body: fileContent,
+            Body: file.buffer,
         });
         try {
             await this.client().send(command);
@@ -59,7 +70,7 @@ class S3 {
         } catch (err) {
             return {
                 success: false,
-                message: "Upload failed:" + err.message,
+                message: "["+fileName+"]Upload failed:" + err.message,
             }
         }
     }
