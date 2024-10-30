@@ -44,7 +44,7 @@ class S3 {
         return `${randomName}.${ext}`;
     }
 
-    static async upload(file){
+    static async upload(file,opts={}){
         if (!file) {
             return {
                 success: false,
@@ -53,13 +53,32 @@ class S3 {
         }
         const fileName = this.generateRandomFileName(file);
         const { PutObjectCommand } = require("@aws-sdk/client-s3");
-        const command = new PutObjectCommand({
-            Bucket: this.bucketName,
-            Key: fileName,
-            Body: file.buffer,
-        });
+
+
+
+        
+
+        if(opts.sizes){
+            const sharp = require('sharp');
+            for(const {width, height, suffix} of opts.sizes){
+                const resizedBuffer = await sharp(file.buffer)
+                   .resize(width, height)
+                   .toBuffer();
+
+                await this.client().send(new PutObjectCommand({
+                    Bucket: this.bucketName,
+                    Key:fileName.replace(/\.[^.]+$/, '-' + suffix + '$&'),
+                    Body: resizedBuffer,
+                }));
+            }
+        }
+
         try {
-            await this.client().send(command);
+            await this.client().send(new PutObjectCommand({
+                Bucket: this.bucketName,
+                Key: fileName,
+                Body: file.buffer,
+            }));
             return {
                 success: true,
                 message: "Upload successful",
@@ -85,7 +104,7 @@ class S3 {
         });
     
         try {
-            const url = await getSignedUrl(this.client(), command, { expiresIn: 3600 }); // 过期时间为3600秒（1小时）
+            let url = await getSignedUrl(this.client(), command, { expiresIn: 3600 }); // 过期时间为3600秒（1小时）
             return url;
         } catch (err) {
             return null;

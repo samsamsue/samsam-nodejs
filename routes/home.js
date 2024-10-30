@@ -4,7 +4,7 @@ const router = express.Router();
 router.get('/', async (req, res) => {
 
     const S3 = require('../utils/s3')
-    const url = await S3.getUrl('c80bd6580e53555b1cceb82df6282d4b.png');
+    const url = await S3.getUrl('dana-ward-yrCqlIUA2V8-unsplash.jpg');
 
     res.send('Hello World!<img src="'+url+'">');
 });
@@ -73,7 +73,13 @@ router.get('/mylog-list', async (req, res) => {
         if(row.mediaList.length > 0){
             for(let index in row.mediaList){
                 const key = row.mediaList[index];
-                row.mediaList[index] = await S3.getUrl(key)
+                let samll_key = key.replace(/\.[^.]+$/, '-small$&')
+                let medium_key = key.replace(/\.[^.]+$/, '-medium$&')
+                row.mediaList[index] = {
+                    thumb:await S3.getUrl(samll_key),
+                    medium:await S3.getUrl(medium_key),
+                    url:await S3.getUrl(medium_key)
+                }
             }
         }
     }
@@ -95,10 +101,17 @@ const upload = multer({ storage: multer.memoryStorage() });
 //上传cloudflare r2文件
 router.post('/upload',upload.single('file'), async (req, res) => {
 
+    const sizes = [
+        {width:300,height:300, suffix:'small'},
+        {width:800,height:800, suffix:'medium'},
+    ]
+
     const S3 = require('../utils/s3')
     const file = req.file;
     S3.setBucketName('samsam');
-    const result = await S3.upload(file);
+    const result = await S3.upload(file,{
+        sizes
+    });
     res.json(result);
 });
 
