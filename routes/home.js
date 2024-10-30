@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-    res.send('Hello World!');
+    res.send('Hello World!<img src="/getThumb">');
 });
 
 router.post('/mylog-delete', async (req, res) => {
@@ -105,7 +105,7 @@ router.post('/getFile', async (req, res) => {
 
 router.get('/getThumb', async (req, res) => {
     const S3 = require('../utils/s3')
-    res.send(await S3.getThumbnail('1730166137303_2024-01-31-16-18-30-383751437.png', 50, 50));
+    res.send(await S3.getThumbnail('dana-ward-yrCqlIUA2V8-unsplash.jpg', 50, 50));
 })
 
 module.exports = router;
