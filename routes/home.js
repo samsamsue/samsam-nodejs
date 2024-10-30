@@ -2,7 +2,11 @@ const express = require('express');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-    res.send('Hello World!<img src="/getThumb">');
+
+    const S3 = require('../utils/s3')
+    const url = await S3.getUrl('c80bd6580e53555b1cceb82df6282d4b.png');
+
+    res.send('Hello World!<img src="'+url+'">');
 });
 
 router.post('/mylog-delete', async (req, res) => {
