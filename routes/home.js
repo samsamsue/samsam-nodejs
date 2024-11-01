@@ -64,7 +64,14 @@ router.post('/mylog-submit', async(req,res)=>{
 router.get('/mylog-list', async (req, res) => {
 
     const logModel = require('../models/mylog');
-    const list =  await logModel.find({}).sort({date:-1});
+
+    const {page} = req.query;
+
+    const pageNum = parseInt(page) || 1;
+    const pageSize = 10;
+    const total = await logModel.countDocuments({});
+    const totalPage = Math.ceil(total/pageSize);
+    const list = await logModel.find({}).sort({date:-1}).skip((pageNum-1)*pageSize).limit(pageSize);
 
     const S3 = require('../utils/s3')
 
@@ -84,11 +91,11 @@ router.get('/mylog-list', async (req, res) => {
         }
     }
 
-    console.log(list)
-
     res.json({
         success: true,
-        list
+        list,
+        totalPage,
+        page
     });
 });
 
