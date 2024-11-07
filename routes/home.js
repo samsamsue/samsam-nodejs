@@ -3,10 +3,18 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
 
-    const S3 = require('../utils/s3')
-    const url = await S3.getUrl('dana-ward-yrCqlIUA2V8-unsplash.jpg');
+    // const qiniu = require('../utils/qiniu');
+    // const url = qiniu.signUrl('7ba7b5fc986aa227ecb7e8688d69fa1b.png');
 
-    res.send('Hello World!<img src="'+url+'">');
+    // res.send(`
+    //     <img src="${url}">
+    //     <form action="/upload-qn" method="post" enctype="multipart/form-data">
+    //         <input type="file" name="file">
+    //         <button type="submit">上传</button>
+    //     </form>
+    // `);
+
+    res.send(`Hello world!`);
 });
 
 router.post('/mylog-delete', async (req, res) => {
@@ -104,6 +112,20 @@ const multer = require('multer');
 const upload = multer({ storage: multer.memoryStorage() });
 
 
+//上传到七牛云
+router.post('/upload-qn', upload.single('file'), async (req, res) => {
+    const file = req.file;
+    if(!file){
+        res.json({
+            success:false,
+            message:'没有上传文件'
+        })  
+        return;
+    }
+    const qiniu = require('../utils/qiniu');
+    const result = await qiniu.upload(file);
+    res.json(result);
+});
 
 //上传cloudflare r2文件
 router.post('/upload',upload.single('file'), async (req, res) => {
@@ -115,6 +137,7 @@ router.post('/upload',upload.single('file'), async (req, res) => {
 
     const S3 = require('../utils/s3')
     const file = req.file;
+    
     S3.setBucketName('samsam');
     const result = await S3.upload(file,{
         sizes
