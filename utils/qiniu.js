@@ -21,6 +21,18 @@ class qiniu {
         return `${randomName}.${ext}`;
     }
 
+    static async getToken(){
+        var qiniuSDK = require("qiniu");
+        const mac = new qiniuSDK.auth.digest.Mac(process.env.QINIU_ACCESS_KEY, process.env.QINIU_SECRET_KEY);
+        const options = {
+            scope: process.env.QINIU_BUCKET_NAME,
+        }
+
+        const putPolicy = new qiniuSDK.rs.PutPolicy(options);
+        const uploadToken = putPolicy.uploadToken(mac);
+        return uploadToken;
+    }
+
     static async upload(file,opts={}){
         var qiniuSDK = require("qiniu");
         const mac = new qiniuSDK.auth.digest.Mac(process.env.QINIU_ACCESS_KEY, process.env.QINIU_SECRET_KEY);

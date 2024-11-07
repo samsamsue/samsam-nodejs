@@ -112,19 +112,21 @@ const multer = require('multer');
 const upload = multer({ storage: multer.memoryStorage() });
 
 
-//上传到七牛云
 router.post('/upload-qn', upload.single('file'), async (req, res) => {
-    const file = req.file;
-    if(!file){
-        res.json({
-            success:false,
-            message:'没有上传文件'
-        })  
-        return;
-    }
+
+});
+
+//上传到七牛云
+router.post('/qiniu-token', upload.single('file'), async (req, res) => {
     const qiniu = require('../utils/qiniu');
-    const result = await qiniu.upload(file);
-    res.json(result);
+    const token = await qiniu.getToken();
+    res.json({
+        success: true,
+        message: 'ok',
+        data:{
+            token
+        }
+    });
 });
 
 //上传cloudflare r2文件
