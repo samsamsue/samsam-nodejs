@@ -3,8 +3,8 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
 
-    // const qiniu = require('../utils/qiniu');
-    // const url = qiniu.signUrl('7ba7b5fc986aa227ecb7e8688d69fa1b.png');
+    const qiniu = require('../utils/qiniu');
+    const url = qiniu.signUrl('7ba7b5fc986aa227ecb7e8688d69fa1b.png','small');
 
     // res.send(`
     //     <img src="${url}">
@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
     //     </form>
     // `);
 
-    res.send(`Hello world!`);
+    res.send(`<img src="${url}">`);
 });
 
 router.post('/mylog-delete', async (req, res) => {
@@ -81,19 +81,19 @@ router.get('/mylog-list', async (req, res) => {
     const totalPage = Math.ceil(total/pageSize);
     const list = await logModel.find({}).sort({date:-1}).skip((pageNum-1)*pageSize).limit(pageSize);
 
-    const S3 = require('../utils/s3')
+    // const S3 = require('../utils/s3')
+
+    const qiniu = require('../utils/qiniu');
 
 
     for(let row of list){
         if(row.mediaList.length > 0){
             for(let index in row.mediaList){
                 const key = row.mediaList[index];
-                let samll_key = key.replace(/\.[^.]+$/, '-small$&')
-                let medium_key = key.replace(/\.[^.]+$/, '-medium$&')
                 row.mediaList[index] = {
-                    thumb:await S3.getUrl(samll_key),
-                    medium:await S3.getUrl(medium_key),
-                    url:await S3.getUrl(medium_key)
+                    thumb:await qiniu.signUrl(key,'small'),
+                    medium:await qiniu.signUrl(key,'medium'),
+                    url:await qiniu.signUrl(key)
                 }
             }
         }

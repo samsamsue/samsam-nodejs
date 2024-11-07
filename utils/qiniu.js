@@ -70,15 +70,21 @@ class qiniu {
     }
 
 
-    static signUrl(key){
-        var qiniuSDK = require("qiniu");
+    static signUrl(key,size){
+        const qiniuSDK = require("qiniu");
         const mac = new qiniuSDK.auth.digest.Mac(process.env.QINIU_ACCESS_KEY, process.env.QINIU_SECRET_KEY);
         const config = new qiniuSDK.conf.Config();
-        config.zone = qiniuSDK.zone.Zone_z2;
         const bucketManager = new qiniuSDK.rs.BucketManager(mac, config);
-        const deadline = parseInt(Date.now()/1000) + 3600;
-        const privateUrl = bucketManager.privateDownloadUrl(process.env.QINIU_DOMAIN, key, deadline);
-        return privateUrl;  
+        const deadline = parseInt(Date.now() / 1000) + 3600; // 1小时过期
+        let newkey = key;
+
+        if(size){
+            newkey = key + '-' + size;
+        }
+
+        
+        const privateDownloadUrl = bucketManager.privateDownloadUrl(process.env.QINIU_DOMAIN,newkey, deadline);  
+        return privateDownloadUrl;
     }
 }
 
