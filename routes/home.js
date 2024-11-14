@@ -18,6 +18,13 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/mylog-delete', async (req, res) => {
+    if(!checkAuth(req.headers)){
+        return res.json({
+            success:false,
+            needAuth:true,
+            message:'无效的授权'
+        })
+    }
     const {id} = req.body;
     const logModel = require('../models/mylog');
     try{
@@ -35,6 +42,14 @@ router.post('/mylog-delete', async (req, res) => {
 })
 
 router.post('/mylog-submit', async(req,res)=>{
+    if(!checkAuth(req.headers)){
+        return res.json({
+            success:false,
+            needAuth:true,
+            message:'无效的授权'
+        })
+    }
+
     const {content, mediaList} = req.body;
 
     if(content === '' && (mediaList||[]).length < 1){
@@ -62,15 +77,36 @@ router.post('/mylog-submit', async(req,res)=>{
             message:'发表出错了：'+e.message
         })
     }
-
-
-
-
 })
+
+
+function checkAuth(headers) {
+    const authHeader = headers['authorization'];
+    if(!authHeader){
+        return false;
+    } 
+    const token = authHeader.split(' ')[1];
+    if(!token){
+        return false;
+    }
+    if(token !== process.env.AUTH_TOKEN){
+        return false;
+    }
+    return true;
+}
+
 
 // 定义路由
 router.get('/mylog-list', async (req, res) => {
 
+    if(!checkAuth(req.headers)){
+        return res.json({
+            success:false,
+            needAuth:true,
+            message:'无效的授权'
+        })
+    }
+    
     const logModel = require('../models/mylog');
 
     const {page} = req.query;
@@ -118,6 +154,13 @@ router.post('/upload-qn', upload.single('file'), async (req, res) => {
 
 //上传到七牛云
 router.post('/qiniu-token', upload.single('file'), async (req, res) => {
+    if(!checkAuth(req.headers)){
+        return res.json({
+            success:false,
+            needAuth:true,
+            message:'无效的授权'
+        })
+    }
     const qiniu = require('../utils/qiniu');
     const token = await qiniu.getToken();
     res.json({
@@ -131,6 +174,14 @@ router.post('/qiniu-token', upload.single('file'), async (req, res) => {
 
 //上传cloudflare r2文件
 router.post('/upload',upload.single('file'), async (req, res) => {
+
+    if(!checkAuth(req.headers)){
+        return res.json({
+            success:false,
+            needAuth:true,
+            message:'无效的授权'
+        })
+    }
 
     const sizes = [
         {width:300,height:300, suffix:'small'},
