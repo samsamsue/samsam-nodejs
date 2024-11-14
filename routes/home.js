@@ -97,7 +97,7 @@ function checkAuth(headers) {
 
 
 // 定义路由
-router.get('/mylog-list', async (req, res) => {
+router.post('/mylog-list', async (req, res) => {
 
     if(!checkAuth(req.headers)){
         return res.json({
@@ -109,13 +109,27 @@ router.get('/mylog-list', async (req, res) => {
     
     const logModel = require('../models/mylog');
 
-    const {page} = req.query;
+    const {page,filter} = req.body;
+
+    const findParams = {};
+
+    if(filter ){
+        if(Array.isArray(filter.dateRange) && filter.dateRange.length === 2){
+            const [start,end] = filter.dateRange;
+            findParams.date = { $gte: new Date(start), $lte: new Date(end).setHours(23,59,59,999) };
+        }
+        if(filter.word){
+            findParams.content = new RegExp(filter.word);
+        }
+    }
+
+
 
     const pageNum = parseInt(page) || 1;
     const pageSize = 10;
     const total = await logModel.countDocuments({});
     const totalPage = Math.ceil(total/pageSize);
-    const list = await logModel.find({}).sort({date:-1}).skip((pageNum-1)*pageSize).limit(pageSize);
+    const list = await logModel.find(findParams).sort({date:-1}).skip((pageNum-1)*pageSize).limit(pageSize);
 
     // const S3 = require('../utils/s3')
 
