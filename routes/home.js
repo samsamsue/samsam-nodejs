@@ -115,8 +115,13 @@ router.post('/mylog-list', async (req, res) => {
 
     if(filter ){
         if(Array.isArray(filter.dateRange) && filter.dateRange.length === 2){
-            const [start,end] = filter.dateRange;
-            findParams.date = { $gte: new Date(start), $lte: new Date(end).setHours(23,59,59,999) };
+            const moment = require('moment-timezone');
+            const timeZone = 'Asia/Shanghai';
+            const [start, end] = filter.dateRange;
+            // 将 start 和 end 转换为指定时区的时间
+            const startDate = moment.tz(start, timeZone).startOf('day').toDate();
+            const endDate = moment.tz(end, timeZone).endOf('day').toDate();
+            findParams.date = { $gte: startDate, $lte: endDate };
         }
         if(filter.word){
             findParams.content = new RegExp(filter.word);
