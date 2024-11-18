@@ -50,7 +50,7 @@ router.post('/mylog-submit', async(req,res)=>{
         })
     }
 
-    const {content, mediaList} = req.body;
+    const {content, mediaList,type} = req.body;
 
     if(content === '' && (mediaList||[]).length < 1){
         return res.json({
@@ -62,7 +62,8 @@ router.post('/mylog-submit', async(req,res)=>{
     const log = new logModel({
         content,
         date: new Date(),
-        mediaList
+        mediaList,
+        type: type || 'text'
     });
 
     try{
@@ -113,10 +114,12 @@ router.post('/mylog-list', async (req, res) => {
 
     const findParams = {};
 
+    const moment = require('moment-timezone');
+    const timeZone = 'Asia/Shanghai';
+
     if(filter ){
         if(Array.isArray(filter.dateRange) && filter.dateRange.length === 2){
-            const moment = require('moment-timezone');
-            const timeZone = 'Asia/Shanghai';
+           
             const [start, end] = filter.dateRange;
             // 将 start 和 end 转换为指定时区的时间
             const startDate = moment.tz(start, timeZone).startOf('day').toDate();
@@ -152,8 +155,10 @@ router.post('/mylog-list', async (req, res) => {
                     key:key,
                 }
             }
-        }
+        };
     }
+
+
 
     res.json({
         success: true,

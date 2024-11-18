@@ -9,6 +9,11 @@ const itemSchema = new mongoose.Schema({
     mediaList:{
         type:Array,
         default:[],
+    },
+    type:{
+        type:String,
+        default:'image',
+        enum:['image','video','audio',]
     }
 });
 const Item = mongoose.model('mylog', itemSchema);
