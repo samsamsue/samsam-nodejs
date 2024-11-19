@@ -14,6 +14,10 @@ const itemSchema = new mongoose.Schema({
         type:String,
         default:'image',
         enum:['image','video','audio',]
+    },
+    location:{
+        type:Object,
+        default:null,
     }
 });
 const Item = mongoose.model('mylog', itemSchema);

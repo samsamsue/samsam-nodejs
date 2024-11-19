@@ -50,7 +50,7 @@ router.post('/mylog-submit', async(req,res)=>{
         })
     }
 
-    const {content, mediaList,type} = req.body;
+    const {content, mediaList,type,location} = req.body;
 
     if(content === '' && (mediaList||[]).length < 1){
         return res.json({
@@ -63,7 +63,8 @@ router.post('/mylog-submit', async(req,res)=>{
         content,
         date: new Date(),
         mediaList,
-        type: type || 'text'
+        type: type || 'text',
+        location: location || {},
     });
 
     try{
