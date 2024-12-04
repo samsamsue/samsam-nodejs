@@ -3,13 +3,11 @@ class Base {
     static isTest = false;
 
     static model(){
-        const path = require('path');
-        const rootDir = path.dirname(require.main.filename);
-        return require( rootDir+'/models/mylog'+ (this.isTest? 'test' : ''));
+        return require( __dirname + '../../models/mylog'+ (this.isTest? 'test' : ''));
     }
 
     static getToken(headers){
-        const authHeader = headers['authorization'];
+        const authHeader = headers['authorization']; 
         if (!authHeader) {
             return false;
         }
