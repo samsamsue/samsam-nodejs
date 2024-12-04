@@ -1,10 +1,9 @@
 class Base {
 
-    static modelPath = "../models/mylog";
     static isTest = false;
 
     static model(){
-        return require( this.modelPath + (this.isTest? 'test' : ''));
+        return require( '../models/mylog'+ (this.isTest? 'test' : ''));
     }
 
     static getToken(headers){
