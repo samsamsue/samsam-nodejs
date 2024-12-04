@@ -3,7 +3,9 @@ class Base {
     static isTest = false;
 
     static model(){
-        return require( '../models/mylog'+ (this.isTest? 'test' : ''));
+        const path = require('path');
+        const rootDir = path.dirname(require.main.filename);
+        return require( rootDir+'/models/mylog'+ (this.isTest? 'test' : ''));
     }
 
     static getToken(headers){
