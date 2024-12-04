@@ -4,7 +4,7 @@ class Base {
     static isTest = false;
 
     static model(){
-        return require(this.isTest ? this.modelPath + 'test' : this.modelPath);
+        return require( this.modelPath + (this.isTest? 'test' : ''));
     }
 
     static getToken(headers){
@@ -29,7 +29,10 @@ class Base {
         if(token === 'test' && isLocal) {
             this.isTest = true;
             return true;
+        }else{
+            this.isTest = false;
         }
+        
         if (token !== process.env.AUTH_TOKEN) {
             return false;
         }
