@@ -134,7 +134,7 @@ router.post('/mylog-list', async (req, res) => {
             for(let index in row.mediaList){
                 const key = row.mediaList[index];
                 row.mediaList[index] = {
-                    small:await qiniu.signUrl(key,'small'),
+                    cover:await qiniu.signUrl(key,'cover'),
                     medium:await qiniu.signUrl(key,'medium'),
                     url:await qiniu.signUrl(key),
                     key:key,
