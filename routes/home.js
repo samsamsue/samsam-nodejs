@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const Base = require('../utils/base');
 
 router.get('/', async (req, res) => {
 
@@ -18,7 +19,7 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/mylog-delete', async (req, res) => {
-    if(!checkAuth(req.headers)){
+    if(!Base.checkAuth(req)){
         return res.json({
             success:false,
             needAuth:true,
@@ -26,7 +27,7 @@ router.post('/mylog-delete', async (req, res) => {
         })
     }
     const {id} = req.body;
-    const logModel = require('../models/mylog');
+    const logModel = Base.model();
     try{
         await logModel.findByIdAndDelete(id);
         res.json({
@@ -42,7 +43,7 @@ router.post('/mylog-delete', async (req, res) => {
 })
 
 router.post('/mylog-submit', async(req,res)=>{
-    if(!checkAuth(req.headers)){
+    if(!Base.checkAuth(req)){
         return res.json({
             success:false,
             needAuth:true,
@@ -58,7 +59,7 @@ router.post('/mylog-submit', async(req,res)=>{
             message:'你咋啥也没写'
         })
     }
-    const logModel = require('../models/mylog');
+    const logModel = Base.model();
     const log = new logModel({
         content,
         date: new Date(),
@@ -81,27 +82,10 @@ router.post('/mylog-submit', async(req,res)=>{
     }
 })
 
-
-function checkAuth(headers) {
-    const authHeader = headers['authorization'];
-    if(!authHeader){
-        return false;
-    } 
-    const token = authHeader.split(' ')[1];
-    if(!token){
-        return false;
-    }
-    if(token !== process.env.AUTH_TOKEN){
-        return false;
-    }
-    return true;
-}
-
-
 // 定义路由
 router.post('/mylog-list', async (req, res) => {
 
-    if(!checkAuth(req.headers)){
+    if(!Base.checkAuth(req)){
         return res.json({
             success:false,
             needAuth:true,
@@ -109,7 +93,7 @@ router.post('/mylog-list', async (req, res) => {
         })
     }
     
-    const logModel = require('../models/mylog');
+    const logModel = Base.model();
 
     const {page,filter} = req.body;
 
@@ -180,7 +164,7 @@ router.post('/upload-qn', upload.single('file'), async (req, res) => {
 
 //上传到七牛云
 router.post('/qiniu-token', upload.single('file'), async (req, res) => {
-    if(!checkAuth(req.headers)){
+    if(!Base.checkAuth(req)){
         return res.json({
             success:false,
             needAuth:true,
@@ -201,7 +185,7 @@ router.post('/qiniu-token', upload.single('file'), async (req, res) => {
 //上传cloudflare r2文件
 router.post('/upload',upload.single('file'), async (req, res) => {
 
-    if(!checkAuth(req.headers)){
+    if(!Base.checkAuth(req)){
         return res.json({
             success:false,
             needAuth:true,
