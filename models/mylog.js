@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { link } = require('../routes/home');
 
 const itemSchema = new mongoose.Schema({
     content: String,
@@ -16,6 +17,10 @@ const itemSchema = new mongoose.Schema({
         enum:['image','video','audio',]
     },
     location:{
+        type:Object,
+        default:null,
+    },
+    link:{
         type:Object,
         default:null,
     }

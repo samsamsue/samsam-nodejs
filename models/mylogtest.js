@@ -18,6 +18,10 @@ const itemSchema = new mongoose.Schema({
     location:{
         type:Object,
         default:null,
+    },
+    link:{
+        type:Object,
+        default:null,
     }
 });
 const Item = mongoose.model('mylogtest', itemSchema);
