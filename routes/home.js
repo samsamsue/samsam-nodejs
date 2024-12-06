@@ -53,7 +53,7 @@ router.post('/mylog-submit', async(req,res)=>{
 
     const {content, mediaList,type,location,link} = req.body;
 
-    if(content === '' && (mediaList||[]).length < 1){
+    if(content === '' && (mediaList||[]).length < 1 && !link ){
         return res.json({
             success:false,
             message:'你咋啥也没写'
