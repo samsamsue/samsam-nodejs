@@ -70,7 +70,7 @@ class qiniu {
     }
 
 
-    static signUrl(key,size){
+    static signUrl(key,size,type='image'){
         const qiniuSDK = require("qiniu");
         const mac = new qiniuSDK.auth.digest.Mac(process.env.QINIU_ACCESS_KEY, process.env.QINIU_SECRET_KEY);
         const config = new qiniuSDK.conf.Config();
@@ -80,6 +80,9 @@ class qiniu {
 
         if(size){
             newkey = key + '-' + size;
+        }
+        if(type=='video' && size=='cover'){
+            newkey = key + '?vframe/jpg/offset/1';
         }
 
         
