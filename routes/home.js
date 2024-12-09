@@ -4,8 +4,8 @@ const Base = require('../utils/base');
 
 router.get('/', async (req, res) => {
 
-    const qiniu = require('../utils/qiniu');
-    const url = qiniu.signUrl('7ba7b5fc986aa227ecb7e8688d69fa1b.png','small');
+    // const qiniu = require('../utils/qiniu');
+    // const url = qiniu.signUrl('7ba7b5fc986aa227ecb7e8688d69fa1b.png','small');
 
     // res.send(`
     //     <img src="${url}">
@@ -15,7 +15,9 @@ router.get('/', async (req, res) => {
     //     </form>
     // `);
 
-    res.send(`<img src="${url}">`);
+    const logModel = Base.model();
+    const a = logModel.findOne();
+    res.send(`hello`);
 });
 
 router.post('/mylog-delete', async (req, res) => {
