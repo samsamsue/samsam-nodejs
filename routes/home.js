@@ -20,6 +20,17 @@ router.get('/', async (req, res) => {
     res.send(`hello`);
 });
 
+
+router.post('/rand-msg', async (req, res) => {
+    const axios = require('axios');
+    const result = await axios.get('https://apis.jxcxin.cn/api/yiyan?type=json');
+    res.json({
+        success: true,
+        message: 'ok',  
+        data: result.data.msg
+    });
+});
+
 router.post('/mylog-delete', async (req, res) => {
     if(!Base.checkAuth(req)){
         return res.json({
