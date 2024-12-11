@@ -22,7 +22,11 @@ const itemSchema = new mongoose.Schema({
     link:{
         type:Object,
         default:null,
-    }
+    },
+    emoji:{
+        type:String,
+        default:null,
+    },
 });
 const Item = mongoose.model('mylogtest', itemSchema);
 
