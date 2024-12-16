@@ -1,14 +1,32 @@
-# 第一阶段：构建阶段
-FROM alpine AS builder
-WORKDIR /usr/src/app
-RUN apk add --no-cache --update nodejs nodejs-npm
+# 构建阶段
+FROM node:alpine AS builder
+
+# 设置工作目录
+WORKDIR /app
+
+# 复制 package.json 和 package-lock.json
 COPY package*.json ./
+
+# 安装依赖
 RUN npm install --production
 
-# 第二阶段：生产环境阶段
-FROM alpine
-WORKDIR /home/app
-RUN apk add --no-cache --update nodejs nodejs-npm
-COPY --from=builder /usr/src/app/node_modules ./node_modules  # 路径应一致
+# 复制应用代码
 COPY . .
-CMD [ 'npm', 'start' ]
+
+# 运行阶段
+FROM node:alpine
+
+# 设置工作目录
+WORKDIR /app
+
+# 从构建阶段复制所需文件
+COPY --from=builder /app /app
+
+# 设置环境变量，指示 Node.js 以生产模式运行
+ENV NODE_ENV=production
+
+# 公开应用端口
+EXPOSE 3000
+
+# 启动应用
+CMD ["node", "index.js"]
