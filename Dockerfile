@@ -1,7 +1,7 @@
 FROM alpine AS builder
 WORKDIR /home/app
 RUN apk add --no-cache --update nodejs nodejs-npm
-COPY package.json package-lock.json ./
+COPY package*.json ./
 RUN npm install --production
 
 FROM alpine
