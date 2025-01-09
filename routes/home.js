@@ -135,7 +135,7 @@ router.post('/mylog-list', async (req, res) => {
 
     const pageNum = parseInt(page) || 1;
     const pageSize = 10;
-    const total = await logModel.countDocuments({});
+    const total = await logModel.find(findParams).countDocuments({});
     const totalPage = Math.ceil(total/pageSize);
     const list = await logModel.find(findParams).sort({date:-1}).skip((pageNum-1)*pageSize).limit(pageSize);
 
@@ -151,7 +151,7 @@ router.post('/mylog-list', async (req, res) => {
                 row.mediaList[index] = {
                     cover: await qiniu.signUrl(key,'cover',row['type']),
                     medium:await qiniu.signUrl(key,'medium'),
-                    url:await qiniu.signUrl(key),
+                    url:await qiniu.signUrl(key, row['type'] === 'video'? 'preview.m3u8' :null),
                     key:key,
                 }
             }
