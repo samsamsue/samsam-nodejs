@@ -151,7 +151,7 @@ router.post('/mylog-list', async (req, res) => {
                 row.mediaList[index] = {
                     cover: await qiniu.signUrl(key,'cover',row['type']),
                     medium:await qiniu.signUrl(key,'medium'),
-                    url:await qiniu.signUrl(key, row['type'] === 'video'? 'preview.m3u8' :null),
+                    url:await qiniu.signUrl(key),
                     key:key,
                 }
             }
