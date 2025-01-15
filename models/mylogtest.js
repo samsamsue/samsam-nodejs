@@ -27,6 +27,10 @@ const itemSchema = new mongoose.Schema({
         type:String,
         default:null,
     },
+    top:{
+        type:Date,
+        default:null,
+    },
 });
 const Item = mongoose.model('mylogtest', itemSchema);
 

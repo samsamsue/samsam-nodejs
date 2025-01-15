@@ -55,6 +55,32 @@ router.post('/mylog-delete', async (req, res) => {
     }
 })
 
+router.post('/mylog-top', async(req,res)=>{
+    if(!Base.checkAuth(req)){
+        return res.json({
+            success:false,
+            needAuth:true,
+            message:'无效的授权'
+        })
+    }
+    const {id,isnew} = req.body;
+    const logModel = Base.model();
+    try{
+        const log = await logModel.findById(id);
+        log.top = log.top && !isnew ? null : new Date();
+        await log.save();
+        res.json({
+            success:true,
+            message:'置顶成功'
+        })
+    }catch(e){
+        res.json({
+            success:false,
+            message:'置顶出错了：'+e.message
+        })
+    }
+})
+
 router.post('/mylog-submit', async(req,res)=>{
     if(!Base.checkAuth(req)){
         return res.json({
@@ -139,8 +165,6 @@ router.post('/mylog-list', async (req, res) => {
     const totalPage = Math.ceil(total/pageSize);
     const list = await logModel.find(findParams).sort({date:-1}).skip((pageNum-1)*pageSize).limit(pageSize);
 
-    // const S3 = require('../utils/s3')
-
     const qiniu = require('../utils/qiniu');
 
 
@@ -158,11 +182,25 @@ router.post('/mylog-list', async (req, res) => {
         };
     }
 
-
+    const topList = await logModel.find({top:{ $ne: null }}).sort({top:-1}).limit(36);
+    for(let row of topList){
+        if(row.mediaList.length > 0){
+            for(let index in row.mediaList){
+                const key = row.mediaList[index];
+                row.mediaList[index] = {
+                    cover: await qiniu.signUrl(key,'cover',row['type']),
+                    medium:await qiniu.signUrl(key,'medium'),
+                    url:await qiniu.signUrl(key),
+                    key:key,
+                }
+            }
+        };
+    }
 
     res.json({
         success: true,
         list,
+        topList,
         totalPage,
         page
     });
