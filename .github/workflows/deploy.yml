@@ -1,20 +1,18 @@
-name: Deploy to Cloudflare Workers
-
+name: Deploy Worker
 on:
   push:
     branches:
-      - main  # 设置为你的默认分支
-
+      - main
+  pull_request:
+  repository_dispatch:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
+    name: Deploy
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Deploy Worker to Cloudflare
-        run: |
-          curl -X POST https://api.cloudflare.com/client/v4/accounts/YOUR_ACCOUNT_ID/workers/scripts/YOUR_SCRIPT_NAME \
-          -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_KEY }}" \
-          -F "file=@/path/to/your/worker/script.js"
+      - uses: actions/checkout@v4
+      - name: Build & Deploy Worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
