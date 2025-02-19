@@ -1,0 +1,20 @@
+name: Deploy to Cloudflare Workers
+
+on:
+  push:
+    branches:
+      - main  # 设置为你的默认分支
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Deploy Worker to Cloudflare
+        run: |
+          curl -X POST https://api.cloudflare.com/client/v4/accounts/YOUR_ACCOUNT_ID/workers/scripts/YOUR_SCRIPT_NAME \
+          -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_KEY }}" \
+          -F "file=@/path/to/your/worker/script.js"
