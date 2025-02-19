@@ -1,0 +1,3 @@
+name = "samsam"
+main = "index.js"  # 这里指定你的入口文件
+compatibility_date = "2025-02-19"
