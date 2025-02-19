@@ -1,0 +1,9 @@
+name = "your-worker-name"
+type = "javascript"
+
+[build]
+command = "npm run build"  # 如果有构建步骤
+
+[env.production]
+workers_dev = true
+main = "./index.js"  # 确保此路径指向你的入口文件
